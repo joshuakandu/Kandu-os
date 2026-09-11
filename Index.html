@@ -147,18 +147,46 @@
   const input = document.querySelector("input");
   const button = document.querySelector("button");
 
-  button.addEventListener("click", () => {
+  async function askKandu() {
     const message = input.value.trim();
 
     if (!message) return;
 
-    alert("KANDU heard: " + message);
-    input.value = "";
-  });
+    button.disabled = true;
+    button.textContent = "Thinking...";
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Something went wrong.");
+      }
+
+      alert("KANDU: " + data.reply);
+      input.value = "";
+
+    } catch (error) {
+      alert("KANDU Error: " + error.message);
+
+    } finally {
+      button.disabled = false;
+      button.textContent = "Send";
+    }
+  }
+
+  button.addEventListener("click", askKandu);
 
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
-      button.click();
+      askKandu();
     }
   });
 </script>
