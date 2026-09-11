@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#111111">
+  <meta name="theme-color" content="#0b0b0b">
 
   <title>KANDU OS</title>
 
@@ -12,18 +12,26 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
+      min-height: 100%;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #0b0b0b;
       color: white;
+    }
+
+    body {
       min-height: 100vh;
     }
 
     .app {
-      max-width: 700px;
-      margin: auto;
-      padding: 28px 20px;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 24px 18px 120px;
+    }
+
+    .header {
+      margin-bottom: 24px;
     }
 
     .logo {
@@ -35,72 +43,187 @@
     .subtitle {
       color: #8e8e93;
       margin-top: 4px;
-      margin-bottom: 32px;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 13px;
+      color: #34c759;
+      font-weight: 600;
     }
 
     .card {
       background: #171717;
       border: 1px solid #292929;
       border-radius: 20px;
-      padding: 20px;
+      padding: 18px;
       margin-bottom: 16px;
     }
 
-    h2 {
-      margin-top: 0;
+    .card-title {
+      margin: 0 0 14px;
       font-size: 18px;
     }
 
-    .status {
-      color: #34c759;
-      font-weight: 600;
+    #chatMessages {
+      min-height: 300px;
+      max-height: 55vh;
+      overflow-y: auto;
+      padding: 4px 0;
     }
 
-    .chat {
+    .message-row {
+      display: flex;
+      margin: 12px 0;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-row.kandu {
+      justify-content: flex-start;
+    }
+
+    .message {
+      max-width: 82%;
+      padding: 12px 14px;
+      border-radius: 17px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .message.user {
+      background: white;
+      color: #111;
+      border-bottom-right-radius: 5px;
+    }
+
+    .message.kandu {
+      background: #252525;
+      color: white;
+      border-bottom-left-radius: 5px;
+    }
+
+    .message.error {
+      background: #3a1717;
+      color: #ffb4b4;
+    }
+
+    .empty {
+      color: #8e8e93;
+      text-align: center;
+      padding: 70px 20px;
+      line-height: 1.5;
+    }
+
+    .composer {
       display: flex;
       gap: 10px;
-      margin-top: 14px;
+      margin-top: 16px;
     }
 
-    input {
+    #messageInput {
       flex: 1;
+      min-width: 0;
       background: #242424;
       border: 1px solid #363636;
-      border-radius: 14px;
+      border-radius: 15px;
       padding: 15px;
       color: white;
       font-size: 16px;
       outline: none;
     }
 
-    button {
+    #messageInput:focus {
+      border-color: #666;
+    }
+
+    #sendButton {
       border: 0;
-      border-radius: 14px;
-      padding: 0 18px;
-      font-size: 16px;
+      border-radius: 15px;
+      padding: 0 19px;
+      background: white;
+      color: #111;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
     }
 
-    .task {
-      padding: 12px 0;
-      border-bottom: 1px solid #292929;
+    #sendButton:disabled {
+      opacity: 0.5;
+      cursor: default;
     }
 
-    .task:last-child {
-      border-bottom: 0;
-    }
-
-    .empty {
+    .thinking {
       color: #8e8e93;
+      font-size: 13px;
+      margin-top: 10px;
+      min-height: 18px;
     }
 
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 25px;
+    .sections {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mini-card {
+      background: #171717;
+      border: 1px solid #292929;
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .mini-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .mini-card p {
+      margin: 0;
       color: #8e8e93;
       font-size: 14px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 15, 15, 0.96);
+      border-top: 1px solid #292929;
+      padding: 14px 18px 22px;
+    }
+
+    .bottom-nav-inner {
+      max-width: 760px;
+      margin: auto;
+      display: flex;
+      justify-content: space-around;
+      color: #8e8e93;
+      font-size: 13px;
+    }
+
+    .bottom-nav .active {
+      color: white;
+      font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+      .sections {
+        grid-template-columns: 1fr;
+      }
+
+      .app {
+        padding-top: 20px;
+      }
+
+      .message {
+        max-width: 88%;
+      }
     }
   </style>
 </head>
@@ -109,86 +232,148 @@
 
   <main class="app">
 
-    <div class="logo">KANDU</div>
-    <div class="subtitle">Personal Operating System</div>
+    <header class="header">
+      <div class="logo">KANDU</div>
+      <div class="subtitle">Personal Operating System</div>
+      <div class="status">● AI ONLINE</div>
+    </header>
 
     <section class="card">
-      <h2>KANDU Assistant</h2>
-      <div class="status">● System Online</div>
+      <h2 class="card-title">KANDU Assistant</h2>
 
-      <div class="chat">
+      <div id="chatMessages">
+        <div id="emptyState" class="empty">
+          KANDU is ready.<br>
+          What do you need?
+        </div>
+      </div>
+
+      <div id="thinking" class="thinking"></div>
+
+      <div class="composer">
         <input
+          id="messageInput"
           type="text"
-          placeholder="Tell KANDU what you need..."
+          autocomplete="off"
+          placeholder="Message KANDU..."
         >
-        <button>Send</button>
+        <button id="sendButton">Send</button>
       </div>
     </section>
 
-    <section class="card">
-      <h2>Today</h2>
-      <div class="empty">Nothing scheduled yet.</div>
-    </section>
+    <div class="sections">
 
-    <section class="card">
-      <h2>Waiting On</h2>
-      <div class="empty">Nothing waiting on you.</div>
-    </section>
+      <section class="mini-card">
+        <h3>Today</h3>
+        <p>No tasks yet.</p>
+      </section>
 
-    <div class="nav">
+      <section class="mini-card">
+        <h3>Waiting On</h3>
+        <p>Nothing pending.</p>
+      </section>
+
+    </div>
+
+  </main>
+
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <span class="active">Assistant</span>
       <span>Today</span>
       <span>Inbox</span>
       <span>This Week</span>
       <span>Waiting On</span>
     </div>
+  </nav>
 
-  </main>
-<script>
-  const input = document.querySelector("input");
-  const button = document.querySelector("button");
+  <script>
+    const input = document.getElementById("messageInput");
+    const button = document.getElementById("sendButton");
+    const messages = document.getElementById("chatMessages");
+    const thinking = document.getElementById("thinking");
 
-  async function askKandu() {
-    const message = input.value.trim();
+    function addMessage(text, sender, isError = false) {
+      const emptyState = document.getElementById("emptyState");
 
-    if (!message) return;
-
-    button.disabled = true;
-    button.textContent = "Thinking...";
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Something went wrong.");
+      if (emptyState) {
+        emptyState.remove();
       }
 
-      alert("KANDU: " + data.reply);
+      const row = document.createElement("div");
+      row.className = "message-row " + sender;
+
+      const bubble = document.createElement("div");
+      bubble.className =
+        "message " + sender + (isError ? " error" : "");
+
+      bubble.textContent = text;
+
+      row.appendChild(bubble);
+      messages.appendChild(row);
+
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function askKandu() {
+      const message = input.value.trim();
+
+      if (!message || button.disabled) {
+        return;
+      }
+
+      addMessage(message, "user");
+
       input.value = "";
+      button.disabled = true;
+      button.textContent = "...";
+      thinking.textContent = "KANDU is thinking...";
 
-    } catch (error) {
-      alert("KANDU Error: " + error.message);
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: message
+          })
+        });
 
-    } finally {
-      button.disabled = false;
-      button.textContent = "Send";
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || "KANDU could not complete the request."
+          );
+        }
+
+        addMessage(data.reply, "kandu");
+
+      } catch (error) {
+        addMessage(
+          "Error: " + error.message,
+          "kandu",
+          true
+        );
+
+      } finally {
+        thinking.textContent = "";
+        button.disabled = false;
+        button.textContent = "Send";
+        input.focus();
+      }
     }
-  }
 
-  button.addEventListener("click", askKandu);
+    button.addEventListener("click", askKandu);
 
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      askKandu();
-    }
-  });
-</script>
+    input.addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        askKandu();
+      }
+    });
+  </script>
+
 </body>
 </html>
